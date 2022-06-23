@@ -24,7 +24,7 @@ namespace JobMarket.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public VacancyModel GetVacancyById(int id)
+        public VacancyModel GetVacancyById(Guid id)
         {
 
             return (_storage.GetByCondition(u => u.Id == id)).FirstOrDefault();
@@ -53,7 +53,7 @@ namespace JobMarket.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]VacancyModel vacancy)
+        public void Put(Guid id, [FromBody]VacancyModel vacancy)
         {
            var oldVacancy = _storage.GetByCondition(u => u.Id == id).FirstOrDefault();
             _storage.Delete(oldVacancy);
@@ -62,7 +62,7 @@ namespace JobMarket.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(Guid id) 
         {
             var vacancy = this.GetVacancyById(id);
             if (vacancy is null)

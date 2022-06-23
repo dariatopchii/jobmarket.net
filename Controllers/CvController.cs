@@ -24,7 +24,7 @@ namespace JobMarket.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public CvModel GetCvById(int id)
+        public CvModel GetCvById(Guid id)
         {
 
             return (_storage.GetByCondition(u => u.Id == id)).FirstOrDefault();
@@ -54,7 +54,7 @@ namespace JobMarket.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] CvModel cv)
+        public void Put(Guid id, [FromBody] CvModel cv)
         {
             var oldCv = _storage.GetByCondition(u => u.Id == id).FirstOrDefault();
             _storage.Delete(oldCv);
@@ -63,7 +63,7 @@ namespace JobMarket.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var cv = this.GetCvById(id);
             if (cv is null)

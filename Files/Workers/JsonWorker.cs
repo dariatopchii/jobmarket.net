@@ -21,7 +21,7 @@ namespace JobMarket.Files.Workers
                                                           : throw new ArgumentNullException(nameof(settings));
         }
 
-        public BaseModel GetById(int id)
+        public BaseModel GetById(Guid id)
         {
             return (this.GetByCondition(u => u.Id == id)).FirstOrDefault();
         }
@@ -35,13 +35,7 @@ namespace JobMarket.Files.Workers
         {
             return this.GetAll().Where(condition);
         }
-
-
-        public int GetNextId()
-        {
-            return this.GetAll().OrderBy(x => x.Id).FirstOrDefault()?.Id + 1 ?? 1;
-        }
-
+        
         public void Create(T entity)
         {
             var data = this.GetAll().ToList();

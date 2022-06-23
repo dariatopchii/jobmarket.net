@@ -22,45 +22,49 @@ namespace JobMarket.Controllers
         }
 
         // POST api/values
-        [HttpGet]
-        public Response Login(string email, string password)
+        [HttpPost]
+        [Route("Login")]
+        public IActionResult Login([FromBody]UserLoginModel request)
         {
-            var log = _storage.GetByCondition(x => x.Email.Equals(email) && x.Password.Equals(password)).FirstOrDefault();
+            var log = _storage.GetByCondition(x => x.Email.Equals(request.Email) && x.Password.Equals(request.Password)).FirstOrDefault();
 
             if (log == null)
             {
-                return new Response { Status = "Invalid", Message = "Invalid Data." };
+                return NotFound();
             }
-            else
 
-                return new Response { Status = "Success", Message = "Valid." };
+            return Ok(log);
         }
 
         // POST api/values/
         [HttpPost]
-        public object InsertEmployee( string userName, string email, string password)
+        [Route("Signup")]
+        public IActionResult InsertEmployee([FromBody]UserRequestModel request)
         {
 
 
-            var user = _storage.GetByCondition(u => u.Email == email).FirstOrDefault();
+            var user = _storage.GetByCondition(u => u.Email == request.Email).FirstOrDefault();
                 if (user is not null)
                 {
-                    throw new Exception("user already exists");
+                    BadRequest(400);
                 }
 
                 try
                 {
-                    var newUser = new UserModel();
-                    newUser.Email = email;
-                    newUser.Password = password;
-                    newUser.Name = userName;
+                    var newUser = new UserModel
+                    {
+                        Id = Guid.NewGuid(),
+                        Email = request.Email,
+                        Password = request.Password,
+                        Name = request.Name
+                    };
                     _storage.Create(newUser);
-                    return new Response { Status = "Success", Message = "Valid" };
+                    return Ok(newUser);
                 }
                 catch (Exception)
                 {
                    
-                    return new Response { Status = "Failure", Message = "InValid" };
+                    return NotFound();
                 }
         }
     }

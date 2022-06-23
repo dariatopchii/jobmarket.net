@@ -1,8 +1,10 @@
-﻿namespace JobMarket.Models
+﻿using System;
+
+namespace JobMarket.Models
 {
 	public class BaseModel
 	{
-		public int Id { get; set; }
+		public Guid Id { get; set; }
 	}
 }
 
