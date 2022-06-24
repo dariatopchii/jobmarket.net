@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using JobMarket.Files.Interfaces;
 using JobMarket.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -38,22 +39,57 @@ namespace JobMarket.Controllers
             var vacancies = _storage.GetAll();
             return vacancies;
         }
+        
+        [HttpGet]
+        [Route("UserCvs")]
+        public IActionResult GetUserCvs(Guid userId)
+        {
+            List<CvModel> cvs = (_storage.GetByCondition(u => u.UserId == userId)).ToList();
+
+            if (cvs.Any())
+            {
+                return new JsonResult(cvs);
+            }
+
+            return BadRequest();
+        }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] CvModel cv)
+        public IActionResult Post([FromBody] CvRequestModel cv)
         {
-            var vac = _storage.GetByCondition(u => u.Id == cv.Id).FirstOrDefault();
-
-            if (vac is not null)
+            try
             {
-                throw new Exception("cv with id {id} already exists");
+                var newCv = new CvModel
+                {
+                    Id = Guid.NewGuid(),
+                    Email = cv.Email,
+                    Name = cv.Name,
+                    Gender = cv.Gender,
+                    Location = cv.Location,
+                    Occupation = cv.Occupation,
+                    Education = cv.Education,
+                    Workplace = cv.Workplace,
+                    Firm = cv.Firm,
+                    Position = cv.Position,
+                    Salary = cv.Salary,
+                    Description = cv.Description,
+                    Requirements = cv.Requirements,
+                    UserId = cv.UserId,
+                };
+                _storage.Create(newCv);
+                return Ok();
             }
-            _storage.Create(cv);
+            catch(Exception)
+            {
+                return BadRequest(400);
+            }
+
+
         }
 
         // PUT api/values/5
-        [HttpPut("{id}")]
+        [HttpPut]
         public void Put(Guid id, [FromBody] CvModel cv)
         {
             var oldCv = _storage.GetByCondition(u => u.Id == id).FirstOrDefault();
@@ -63,15 +99,17 @@ namespace JobMarket.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            var cv = this.GetCvById(id);
+            var cv = GetCvById(id);
             if (cv is null)
             {
-                throw new Exception("CV with id {id} does not exist");
+                return NotFound();
             }
 
             _storage.Delete(cv);
+            return Ok();
+
         }
 
     }

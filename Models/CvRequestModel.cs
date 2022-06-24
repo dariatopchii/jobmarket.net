@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace JobMarket.Models
 {
-	public class CvModel: BaseModel
+	public class CvRequestModel
 	{
 		public string Email { get; set; }
 		public string Name { get; set; }
+		public DateTime Birthday { get; set; }
 		public string Gender { get; set; }
 		public string Location { get; set; }
 		public string Occupation { get; set; }
@@ -18,6 +20,7 @@ namespace JobMarket.Models
 		public string Description { get; set; }
 		public string  Requirements { get; set; }
 		public Guid UserId { get; set; }
+		
 	}
 }
 
