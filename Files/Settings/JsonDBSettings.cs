@@ -7,4 +7,3 @@
         public string UserDirectory { get; set; }
     }
 }
-

@@ -28,7 +28,7 @@ namespace JobMarket.Controllers
         public CvModel GetCvById(Guid id)
         {
 
-            return (_storage.GetByCondition(u => u.Id == id)).FirstOrDefault();
+            return (_storage.GetByCondition(cv => cv.Id == id)).FirstOrDefault();
 
         }
 
@@ -36,9 +36,21 @@ namespace JobMarket.Controllers
         [HttpGet]
         public IEnumerable<CvModel> Get()
         {
-            var vacancies = _storage.GetAll();
-            return vacancies;
+            var cvs = _storage.GetAll();
+            return cvs;
         }
+        //
+        // // GET: api/values
+        // [HttpGet]
+        // public IEnumerable<CvModel> GetBySalary(int minSalary, int maxSalary)
+        // {
+        //     var cvs = _storage.GetByCondition(cv => cv.Salary >= minSalary && cv.Salary <= maxSalary);
+        //     return cvs;
+        // }
+        //
+
+        
+        
         
         [HttpGet]
         [Route("UserCvs")]
@@ -90,11 +102,28 @@ namespace JobMarket.Controllers
 
         // PUT api/values/5
         [HttpPut]
-        public void Put(Guid id, [FromBody] CvModel cv)
+        public void Put([FromBody] CvRequestModel cv)
         {
-            var oldCv = _storage.GetByCondition(u => u.Id == id).FirstOrDefault();
+            var oldCv = _storage.GetByCondition(u => u.UserId == cv.UserId).FirstOrDefault();
             _storage.Delete(oldCv);
-            _storage.Create(cv);
+            var newCv = new CvModel
+            {
+                Id = Guid.NewGuid(),
+                Email = cv.Email,
+                Name = cv.Name,
+                Gender = cv.Gender,
+                Location = cv.Location,
+                Occupation = cv.Occupation,
+                Education = cv.Education,
+                Workplace = cv.Workplace,
+                Firm = cv.Firm,
+                Position = cv.Position,
+                Salary = cv.Salary,
+                Description = cv.Description,
+                Requirements = cv.Requirements,
+                UserId = cv.UserId,
+            };
+            _storage.Create(newCv);
         }
 
         // DELETE api/values/5

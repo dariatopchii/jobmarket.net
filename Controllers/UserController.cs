@@ -20,9 +20,7 @@ namespace JobMarket.Controllers
         {
             _storage = storage;
         }
-        [HttpGet]
-        [Route("Cvs")]
-        
+
         // POST api/values
         [HttpPost]
         [Route("Login")]
