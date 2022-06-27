@@ -33,8 +33,8 @@ namespace JobMarket
         {
             services.AddCors(c => c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             services.AddControllers();
-            services.Configure<JsonDBSettings>(Configuration.GetSection("JsonDb"));
-            services.AddTransient(typeof(IGenericStorageWorker<>), typeof(GenericJsonWorker<>));
+            services.Configure<JsonDbSettings>(Configuration.GetSection("JsonDb"));
+            services.AddTransient(typeof(IStorageWorker<>), typeof(JsonWorker<>));
             services.AddTransient(typeof(IReaderWriter), typeof(JsonReaderWriter));
             services.AddSwaggerGen(c =>
             {

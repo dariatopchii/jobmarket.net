@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JobMarket.Models
 {
-	public class CvFilterModel
+	public class FilterModel
 	{
-		public string Email { get; set; }
 		public string Name { get; set; }
 		public string Location { get; set; }
 		public string Occupation { get; set; }
-		public int Salary { get; set; }
-
+		public int? MinSalary { get; set; }
+		public int? MaxSalary { get; set; }
+		
 	}
 }
 

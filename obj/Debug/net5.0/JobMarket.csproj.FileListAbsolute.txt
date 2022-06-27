@@ -35,3 +35,4 @@
 /Users/dariat/Desktop/uni/JobMarket/JobMarket/bin/Debug/net5.0/System.Web.Http.dll
 /Users/dariat/Desktop/uni/JobMarket/JobMarket/bin/Debug/net5.0/System.Web.Http.Cors.dll
 /Users/dariat/Desktop/uni/JobMarket/JobMarket/bin/Debug/net5.0/Newtonsoft.Json.Bson.dll
+/Users/dariat/Desktop/uni/JobMarket/JobMarket/bin/Debug/net5.0/Files/Settings/CvArchiveDirectory.json

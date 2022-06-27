@@ -9,7 +9,7 @@ namespace JobMarket.Files
     {
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped(typeof(IGenericStorageWorker<>), typeof(GenericJsonWorker<>));
+            services.AddScoped(typeof(IStorageWorker<>), typeof(JsonWorker<>));
             services.AddScoped<IReaderWriter, JsonReaderWriter>();
         }
     }

@@ -4,7 +4,7 @@ using JobMarket.Models;
 
 namespace JobMarket.Files.Interfaces
 {
-    public interface IGenericStorageWorker<T>
+    public interface IStorageWorker<T>
      where T : BaseModel
     {
         IEnumerable<T> GetAll();

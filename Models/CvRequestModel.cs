@@ -8,7 +8,6 @@ namespace JobMarket.Models
 	{
 		public string Email { get; set; }
 		public string Name { get; set; }
-		public string Gender { get; set; }
 		public string Location { get; set; }
 		public string Occupation { get; set; }
 		public string Education { get; set; }
@@ -19,6 +18,7 @@ namespace JobMarket.Models
 		public string Description { get; set; }
 		public string  Requirements { get; set; }
 		public Guid UserId { get; set; }
+		public bool IsArchived { get; set; }
 		
 	}
 }

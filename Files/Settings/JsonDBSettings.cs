@@ -1,6 +1,6 @@
 ﻿namespace JobMarket.Files.Settings
 {
-    public class JsonDBSettings
+    public class JsonDbSettings
     { 
         public string VacancyDirectory { get; set; }
         public string CvDirectory { get; set; }
