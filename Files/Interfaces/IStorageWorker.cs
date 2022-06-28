@@ -16,6 +16,11 @@ namespace JobMarket.Files.Interfaces
         void Update(T entity);
 
         void Delete(T entity);
+        
+        public void SaveItemToFile(T entity)
+        {
+        }
+
     }
 }
 

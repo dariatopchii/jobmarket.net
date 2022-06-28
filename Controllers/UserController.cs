@@ -34,7 +34,7 @@ namespace JobMarket.Controllers
         // POST api/values/
         [HttpPost]
         [Route("Signup")]
-        public IActionResult InsertEmployee([FromBody]UserRequestModel request)
+        public IActionResult Register([FromBody]UserRequestModel request)
         {
 
 

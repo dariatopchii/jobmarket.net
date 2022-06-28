@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/dariat/Desktop/uni/JobMarket/JobMarket/JobMarket.csproj": {}
+    "/Users/dariat/Desktop/job market/JobMarket/JobMarket/JobMarket.csproj": {}
   },
   "projects": {
-    "/Users/dariat/Desktop/uni/JobMarket/JobMarket/JobMarket.csproj": {
+    "/Users/dariat/Desktop/job market/JobMarket/JobMarket/JobMarket.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/dariat/Desktop/uni/JobMarket/JobMarket/JobMarket.csproj",
+        "projectUniqueName": "/Users/dariat/Desktop/job market/JobMarket/JobMarket/JobMarket.csproj",
         "projectName": "JobMarket",
-        "projectPath": "/Users/dariat/Desktop/uni/JobMarket/JobMarket/JobMarket.csproj",
+        "projectPath": "/Users/dariat/Desktop/job market/JobMarket/JobMarket/JobMarket.csproj",
         "packagesPath": "/Users/dariat/.nuget/packages/",
-        "outputPath": "/Users/dariat/Desktop/uni/JobMarket/JobMarket/obj/",
+        "outputPath": "/Users/dariat/Desktop/job market/JobMarket/JobMarket/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/dariat/.nuget/NuGet/NuGet.Config"
@@ -38,6 +38,10 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "Epos.Utilities.Web": {
+              "target": "Package",
+              "version": "[6.1.7, )"
+            },
             "Microsoft.AspNet.Cors": {
               "target": "Package",
               "version": "[5.2.9, )"

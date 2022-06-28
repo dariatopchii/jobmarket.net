@@ -17,6 +17,24 @@ namespace JobMarket.Files.ReaderWriters
             var json = JsonConvert.SerializeObject(value);
             File.WriteAllText(source, json);
         }
+
+        public void SaveData(string value)
+        {
+            string path = "./newfile.txt";
+            
+            if (!File.Exists(path))
+            {
+                // Create a file to write to.
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                }	
+            }
+            // var path = "./newfile.txt";
+            // File.Create(path);
+            // var sw = new StreamWriter(path);
+            // sw.Write(path);
+            // File.WriteAllText(path,value);
+        }
     }
 }
 

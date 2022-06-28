@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Epos.Utilities;
 using JobMarket.Files.Interfaces;
 using JobMarket.Files.Settings;
 using JobMarket.Models;
@@ -53,6 +54,13 @@ namespace JobMarket.Files.Workers
             data[index] = entity;
             _readerWriter.Write(_storagePath, data);
         }
+
+        // public void SaveItemToFile(T entity)
+        // {
+        //     string data = entity.GetType().GetProperties()
+        //         .ForEach(x => x.GetValue(x)).ToString();
+        //     _readerWriter.SaveData(data);
+        // }
 
         public string GetFilePath(JsonDbSettings settings)
         {

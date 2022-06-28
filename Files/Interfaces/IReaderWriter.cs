@@ -4,6 +4,8 @@
     {
         T Read<T>(string source);
         void Write<T>(string source, T value);
+
+        void SaveData(string value);
     }
 }
 

@@ -11,7 +11,6 @@ namespace JobMarket.Controllers
     public class CvController : Controller
     {
         // GET: /<controller>/
-        
         private readonly IStorageWorker<CvModel> _storage;
         public CvController(IStorageWorker<CvModel> storage)
         {
@@ -65,6 +64,15 @@ namespace JobMarket.Controllers
                 &&(cv.IsArchived == false)
             ).ToList();
             return Ok(cvs);
+        }
+        
+        // POST api/values
+        [HttpPost]
+        [Route("SaveCvs")]
+        public IActionResult SaveCv([FromBody]CvModel cv)
+        {
+            _storage.SaveItemToFile(cv);
+            return Ok();
         }
 
         // POST api/values
@@ -136,12 +144,30 @@ namespace JobMarket.Controllers
             var cv = _storage.GetByCondition(cv => cv.Id == id.Id).FirstOrDefault();
             try
             {
-                cv.IsArchived = !cv.IsArchived;
+                var newCv = new CvModel
+                {
+                    Id = Guid.NewGuid(),
+                    Email = cv.Email,
+                    Name = cv.Name,
+                    Location = cv.Location,
+                    Occupation = cv.Occupation,
+                    Education = cv.Education,
+                    Workplace = cv.Workplace,
+                    Firm = cv.Firm,
+                    Position = cv.Position,
+                    Salary = cv.Salary,
+                    Description = cv.Description,
+                    Requirements = cv.Requirements,
+                    UserId = cv.UserId,
+                    IsArchived = !cv.IsArchived
+                };
+                _storage.Delete(cv);
+                _storage.Create(newCv);
                 return Ok(200);
             }
             catch
             {
-                return BadRequest();
+                return BadRequest(400);
             }
 
         }
