@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using JobMarket.Files.Interfaces;
+using JobMarket.Files.Workers;
 using JobMarket.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +9,12 @@ namespace JobMarket.Controllers
     [Route("api/[controller]")]
     public class UserController : Controller
     {
-        private readonly IStorageWorker<UserModel> _storage;
-
-        public UserController(IStorageWorker<UserModel> storage)
+        private readonly IGenericCollection<UserModel> _collection;
+        public UserController(IGenericCollection<UserModel> collection)
         {
-            _storage = storage;
+            _collection = collection;
+            _collection.StoragePath = "./Files/Settings/UserDirectory.json";
+            _collection.ReadFromFile();
         }
 
         // POST api/values
@@ -21,7 +22,7 @@ namespace JobMarket.Controllers
         [Route("Login")]
         public IActionResult Login([FromBody]UserLoginModel request)
         {
-            var log = _storage.GetByCondition(x => x.Email.Equals(request.Email) && x.Password.Equals(request.Password)).FirstOrDefault();
+            var log = _collection.GetByCondition(x => x.Email.Equals(request.Email) && x.Password.Equals(request.Password)).FirstOrDefault();
 
             if (log == null)
             {
@@ -38,7 +39,7 @@ namespace JobMarket.Controllers
         {
 
 
-            var user = _storage.GetByCondition(u => u.Email == request.Email).FirstOrDefault();
+            var user = _collection.GetByCondition(u => u.Email == request.Email).FirstOrDefault();
                 if (user is not null)
                 {
                     BadRequest(400);
@@ -53,7 +54,7 @@ namespace JobMarket.Controllers
                         Password = request.Password,
                         Name = request.Name
                     };
-                    _storage.Create(newUser);
+                    _collection.Create(newUser);
                     return Ok(newUser);
                 }
                 catch (Exception)

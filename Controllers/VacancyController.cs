@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JobMarket.Files.Interfaces;
+using JobMarket.Files.Workers;
 using JobMarket.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +12,12 @@ namespace JobMarket.Controllers
     {
         // GET: /<controller>/
 
-        private readonly IStorageWorker<VacancyModel> _storage;
-
-        public VacancyController(IStorageWorker<VacancyModel> storage)
+        private readonly IGenericCollection<VacancyModel> _collection;
+        public VacancyController(IGenericCollection<VacancyModel> collection)
         {
-            _storage = storage;
+            _collection = collection;
+            _collection.StoragePath = "./Files/Settings/VacancyDirectory.json";
+            _collection.ReadFromFile();
         }
 
         // GET api/values/5
@@ -24,15 +25,14 @@ namespace JobMarket.Controllers
         public VacancyModel GetVacancyById(Guid id)
         {
 
-            return _storage.GetByCondition(vac => vac.Id == id).FirstOrDefault();
+            return _collection.GetByCondition(vac => vac.Id == id).FirstOrDefault();
 
         }
         
         [HttpGet]
         public IActionResult GetVacs()
         {
-            List<VacancyModel> vac = _storage.GetAll().ToList();
-            return new JsonResult(vac);
+            return Ok(_collection.Collection);
         }
 
         // GET: api/values
@@ -40,7 +40,7 @@ namespace JobMarket.Controllers
         [Route("FilterVacs")]
         public List<VacancyModel> GetVacs([FromBody]FilterModel filter)
         {
-            var vacs = _storage.GetByCondition(vac =>
+            var vacs = _collection.GetByCondition(vac =>
                 (string.IsNullOrEmpty(filter.Occupation) || vac.Occupation == filter.Occupation)
                 &&(string.IsNullOrEmpty(filter.Name) || vac.Name == filter.Name)
                 && (string.IsNullOrEmpty(filter.Location) || vac.Location == filter.Location)
@@ -57,13 +57,14 @@ namespace JobMarket.Controllers
         {
             try
             {
-                List<VacancyModel> vacs = (_storage.GetByCondition(vac => vac.UserId == userId && vac.IsArchived == arch)).ToList();
-
+                List<VacancyModel> vacs = (_collection
+                                .GetByCondition(vac => vac.UserId == userId && vac.IsArchived == arch))
+                                .ToList();
                 return Ok(vacs);
             }
             catch
             {
-                return new BadRequestResult();
+                return BadRequest();
             }
         }
 
@@ -87,7 +88,7 @@ namespace JobMarket.Controllers
                     IsArchived = vac.IsArchived,
                     Firm = vac.Firm
                 };
-                _storage.Create(newVac);
+                _collection.Create(newVac);
                 return Ok();
             }
             catch(Exception)
@@ -103,8 +104,8 @@ namespace JobMarket.Controllers
         [HttpPut]
         public IActionResult Put([FromBody] VacancyModel vac)
         {
-            var oldVac = _storage.GetByCondition(u => u.Id == vac.Id).FirstOrDefault();
-            _storage.Delete(oldVac);
+            var oldVac = _collection.GetByCondition(u => u.Id == vac.Id).FirstOrDefault();
+            _collection.Delete(oldVac);
             var newVac = new VacancyModel
             {
                 Id = vac.Id,
@@ -119,7 +120,7 @@ namespace JobMarket.Controllers
                 IsArchived = vac.IsArchived,
                 Firm = vac.Firm
             };
-            _storage.Create(newVac);
+            _collection.Create(newVac);
             return Ok();
         }
         
@@ -128,10 +129,12 @@ namespace JobMarket.Controllers
         [HttpPut]
         public IActionResult Archive([FromBody]BaseModel id)
         {
-            var vac = _storage.GetByCondition(cv => cv.Id == id.Id).FirstOrDefault();
-            var newVac = new VacancyModel
+            var vac = _collection.GetByCondition(cv => cv.Id == id.Id).FirstOrDefault();
+            if (vac is not null)
+            {
+                var newVac = new VacancyModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = vac.Id,
                     Email = vac.Email,
                     Name = vac.Name,
                     Location = vac.Location,
@@ -143,9 +146,15 @@ namespace JobMarket.Controllers
                     IsArchived = !vac.IsArchived,
                     Firm = vac.Firm
                 };
-                _storage.Delete(vac);
-                _storage.Create(newVac);
-                return Ok(200);
+            
+                _collection.Update(newVac);
+                return Ok(200); 
+            }
+            else
+            {
+                return BadRequest();
+            }
+            
             
         }
 
@@ -159,7 +168,7 @@ namespace JobMarket.Controllers
                 return NotFound();
             }
 
-            _storage.Delete(vac);
+            _collection.Delete(vac);
             return Ok();
 
         }

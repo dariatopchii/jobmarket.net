@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JobMarket.Files.Interfaces;
+using JobMarket.Files.Workers;
 using JobMarket.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +11,12 @@ namespace JobMarket.Controllers
     public class CvController : Controller
     {
         // GET: /<controller>/
-        private readonly IStorageWorker<CvModel> _storage;
-        public CvController(IStorageWorker<CvModel> storage)
+        private readonly IGenericCollection<CvModel> _collection;
+        public CvController(IGenericCollection<CvModel> collection)
         {
-            _storage = storage;
+            _collection = collection;
+            _collection.StoragePath = "./Files/Settings/CvDirectory.json";
+            _collection.ReadFromFile();
         }
 
         // GET api/values/5
@@ -22,16 +24,15 @@ namespace JobMarket.Controllers
         public CvModel GetCvById(Guid id)
         {
 
-            return (_storage.GetByCondition(cv => cv.Id == id)).FirstOrDefault();
-
+            return (_collection.GetByCondition(cv => cv.Id == id)).FirstOrDefault();
+            
         }
         
         // GET: api/values
         [HttpGet]
         public IActionResult GetCvs()
         {
-            List<CvModel> cvs = _storage.GetAll().ToList();
-            return Ok(cvs);
+            return Ok(_collection.Collection);
         }
         
         [HttpGet]
@@ -40,7 +41,7 @@ namespace JobMarket.Controllers
         {
             try
             {
-                List<CvModel> cvs = (_storage.GetByCondition(u => u.UserId == userId && u.IsArchived == arch)).ToList();
+                List<CvModel> cvs = (_collection.GetByCondition(u => u.UserId == userId && u.IsArchived == arch)).ToList();
 
                 return Ok(cvs);
             }
@@ -55,7 +56,7 @@ namespace JobMarket.Controllers
         [Route("FilterCvs")]
         public IActionResult FilterCvs([FromBody]FilterModel filter)
         {
-            var cvs = _storage.GetByCondition(cv =>
+            var cvs = _collection.GetByCondition(cv =>
                 (string.IsNullOrEmpty(filter.Occupation) || cv.Occupation == filter.Occupation)
                 &&(string.IsNullOrEmpty(filter.Name) || cv.Name == filter.Name)
                 && (string.IsNullOrEmpty(filter.Location) || cv.Location == filter.Location)
@@ -66,14 +67,7 @@ namespace JobMarket.Controllers
             return Ok(cvs);
         }
         
-        // POST api/values
-        [HttpPost]
-        [Route("SaveCvs")]
-        public IActionResult SaveCv([FromBody]CvModel cv)
-        {
-            _storage.SaveItemToFile(cv);
-            return Ok();
-        }
+       
 
         // POST api/values
         [HttpPost]
@@ -98,7 +92,7 @@ namespace JobMarket.Controllers
                     UserId = cv.UserId,
                     IsArchived = cv.IsArchived
                 };
-                _storage.Create(newCv);
+                _collection.Create(newCv);
                 return Ok();
             }
             catch
@@ -114,8 +108,8 @@ namespace JobMarket.Controllers
         [HttpPut]
         public void EditCv([FromBody] CvModel cv)
         {
-            var oldCv = _storage.GetByCondition(u => u.Id == cv.Id).FirstOrDefault();
-            _storage.Delete(oldCv);
+            var oldCv = _collection.GetByCondition(u => u.Id == cv.Id).FirstOrDefault();
+            _collection.Delete(oldCv);
             var newCv = new CvModel
             {
                 Id = cv.Id,
@@ -133,7 +127,7 @@ namespace JobMarket.Controllers
                 UserId = cv.UserId,
                 IsArchived = cv.IsArchived
             };
-            _storage.Create(newCv);
+            _collection.Create(newCv);
         }
         
         // PUT api/values/5
@@ -141,7 +135,7 @@ namespace JobMarket.Controllers
         [HttpPut]
         public IActionResult Archive([FromBody]BaseModel id)
         {
-            var cv = _storage.GetByCondition(cv => cv.Id == id.Id).FirstOrDefault();
+            var cv = _collection.GetByCondition(cv => cv.Id == id.Id).FirstOrDefault();
             try
             {
                 var newCv = new CvModel
@@ -161,8 +155,8 @@ namespace JobMarket.Controllers
                     UserId = cv.UserId,
                     IsArchived = !cv.IsArchived
                 };
-                _storage.Delete(cv);
-                _storage.Create(newCv);
+                _collection.Delete(cv);
+                _collection.Create(newCv);
                 return Ok(200);
             }
             catch
@@ -182,7 +176,7 @@ namespace JobMarket.Controllers
                 return NotFound();
             }
 
-            _storage.Delete(cv);
+            _collection.Delete(cv);
             return Ok();
 
         }

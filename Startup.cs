@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Http.Cors;
-using JobMarket.Files.Interfaces;
-using JobMarket.Files.ReaderWriters;
-using JobMarket.Files.Settings;
+﻿using System.Web.Http.Cors;
+using JobMarket.Files.GenericCollection;
 using JobMarket.Files.Workers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace JobMarket
@@ -33,9 +24,7 @@ namespace JobMarket
         {
             services.AddCors(c => c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             services.AddControllers();
-            services.Configure<JsonDbSettings>(Configuration.GetSection("JsonDb"));
-            services.AddTransient(typeof(IStorageWorker<>), typeof(JsonWorker<>));
-            services.AddTransient(typeof(IReaderWriter), typeof(JsonReaderWriter));
+            services.AddTransient(typeof(IGenericCollection<>), typeof(GenericCollection<>));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobMarket", Version = "v1" });
