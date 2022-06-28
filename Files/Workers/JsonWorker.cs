@@ -43,7 +43,7 @@ namespace JobMarket.Files.Workers
             var data = GetAll().ToList();
             var item = data.FirstOrDefault(x => x.Id == entity.Id);
             data.Remove(item);
-            this._readerWriter.Write(_storagePath, data);
+            _readerWriter.Write(_storagePath, data);
         }
 
         public void Update(T entity)

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 namespace JobMarket.Models
 {
 	public class UserModel : BaseModel

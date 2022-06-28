@@ -104,13 +104,13 @@ namespace JobMarket.Controllers
 
         // PUT api/values/5
         [HttpPut]
-        public void EditCv([FromBody] CvRequestModel cv)
+        public void EditCv([FromBody] CvModel cv)
         {
-            var oldCv = _storage.GetByCondition(u => u.UserId == cv.UserId).FirstOrDefault();
+            var oldCv = _storage.GetByCondition(u => u.Id == cv.Id).FirstOrDefault();
             _storage.Delete(oldCv);
             var newCv = new CvModel
             {
-                Id = Guid.NewGuid(),
+                Id = cv.Id,
                 Email = cv.Email,
                 Name = cv.Name,
                 Location = cv.Location,
@@ -134,27 +134,16 @@ namespace JobMarket.Controllers
         public IActionResult Archive([FromBody]BaseModel id)
         {
             var cv = _storage.GetByCondition(cv => cv.Id == id.Id).FirstOrDefault();
-            var newCv = new CvModel
-                {
-                    Id = Guid.NewGuid(),
-                    Email = cv.Email,
-                    Name = cv.Name,
-                    Location = cv.Location,
-                    Occupation = cv.Occupation,
-                    Education = cv.Education,
-                    Workplace = cv.Workplace,
-                    Firm = cv.Firm,
-                    Position = cv.Position,
-                    Salary = cv.Salary,
-                    Description = cv.Description,
-                    Requirements = cv.Requirements,
-                    UserId = cv.UserId,
-                    IsArchived = !cv.IsArchived
-                };
-                _storage.Delete(cv);
-                _storage.Create(newCv);
+            try
+            {
+                cv.IsArchived = !cv.IsArchived;
                 return Ok(200);
-            
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
         }
 
         // DELETE api/values/5
