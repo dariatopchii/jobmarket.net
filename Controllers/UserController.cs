@@ -22,7 +22,10 @@ namespace JobMarket.Controllers
         [Route("Login")]
         public IActionResult Login([FromBody]UserLoginModel request)
         {
-            var log = _collection.GetByCondition(x => x.Email.Equals(request.Email) && x.Password.Equals(request.Password)).FirstOrDefault();
+            var log = _collection.GetByCondition(x => 
+                    x.Email.Equals(request.Email)
+                    && x.Password.Equals(request.Password))
+                    .FirstOrDefault();
 
             if (log == null)
             {
@@ -36,32 +39,32 @@ namespace JobMarket.Controllers
         [HttpPost]
         [Route("Signup")]
         public IActionResult Register([FromBody]UserRequestModel request)
-        {
-
-
+        { 
             var user = _collection.GetByCondition(u => u.Email == request.Email).FirstOrDefault();
-                if (user is not null)
-                {
-                    BadRequest(400);
-                }
+            if (user is not null)
+            {
+                BadRequest(400);
+            }
 
-                try
+            try
+            {
+                var newUser = new UserModel
                 {
-                    var newUser = new UserModel
-                    {
                         Id = Guid.NewGuid(),
                         Email = request.Email,
                         Password = request.Password,
                         Name = request.Name
-                    };
-                    _collection.Create(newUser);
-                    return Ok(newUser);
-                }
-                catch (Exception)
-                {
-                    return BadRequest(400);
-                }
+                };
+                _collection.Create(newUser);
+                _collection.Upload();
+                return Ok(newUser);
+            }
+            catch (Exception)
+            {
+                return BadRequest(400);
+            }
         }
+        
     }
 }
 

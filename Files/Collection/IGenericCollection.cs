@@ -21,6 +21,6 @@ namespace JobMarket.Files.Workers
 
         void ReadFromFile();
 
-        void SaveToFile();
+        void Upload();
     }
 }

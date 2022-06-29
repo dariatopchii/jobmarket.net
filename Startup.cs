@@ -1,5 +1,5 @@
 ﻿using System.Web.Http.Cors;
-using JobMarket.Files.GenericCollection;
+using JobMarket.Files.Collection;
 using JobMarket.Files.Workers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +24,7 @@ namespace JobMarket
         {
             services.AddCors(c => c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             services.AddControllers();
-            services.AddTransient(typeof(IGenericCollection<>), typeof(GenericCollection<>));
+            services.AddSingleton(typeof(IGenericCollection<>), typeof(GenericCollection<>));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobMarket", Version = "v1" });

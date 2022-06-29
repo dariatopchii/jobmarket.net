@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using JobMarket.Files.Workers;
 using JobMarket.Models;
@@ -41,8 +42,7 @@ namespace JobMarket.Controllers
         {
             try
             {
-                List<CvModel> cvs = (_collection.GetByCondition(u => u.UserId == userId && u.IsArchived == arch)).ToList();
-
+                List<CvModel> cvs = _collection.GetByCondition(u => u.UserId == userId && u.IsArchived == arch).ToList();
                 return Ok(cvs);
             }
             catch
@@ -179,6 +179,35 @@ namespace JobMarket.Controllers
             _collection.Delete(cv);
             return Ok();
 
+        }
+        
+        [HttpGet("{id}/file")]
+        public ActionResult<Stream> DownloadFile(Guid id)
+        {
+            var cv = (_collection.GetByCondition(cv => cv.Id == id)).FirstOrDefault();
+            if (cv is null)
+            {
+                return NotFound();
+            }
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms);
+            var serviceProperties = new[]
+            {
+                nameof(CvModel.Id),
+                nameof(CvModel.UserId),
+                nameof(CvModel.IsArchived),
+            };
+            var properties = cv.GetType().GetProperties()
+                .Where(prop => !serviceProperties.Contains(prop.Name));
+            foreach (var prop in properties)
+            {
+                writer.WriteLine($"{prop.Name}: {prop.GetValue(cv)}");
+            }
+            
+            writer.Flush();
+            ms.Seek(0, SeekOrigin.Begin);
+
+            return new FileStreamResult(ms, "application/octet-stream");
         }
 
     }

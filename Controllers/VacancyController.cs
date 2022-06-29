@@ -22,11 +22,11 @@ namespace JobMarket.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public VacancyModel GetVacancyById(Guid id)
+        public IActionResult GetVacancyById(Guid id)
         {
 
-            return _collection.GetByCondition(vac => vac.Id == id).FirstOrDefault();
-
+            var vac =  _collection.GetByCondition(vac => vac.Id == id).FirstOrDefault();
+            return Ok(vac);
         }
         
         [HttpGet]
@@ -38,17 +38,25 @@ namespace JobMarket.Controllers
         // GET: api/values
         [HttpPost]
         [Route("FilterVacs")]
-        public List<VacancyModel> GetVacs([FromBody]FilterModel filter)
+        public IActionResult GetVacs([FromBody]FilterModel filter)
         {
-            var vacs = _collection.GetByCondition(vac =>
-                (string.IsNullOrEmpty(filter.Occupation) || vac.Occupation == filter.Occupation)
-                &&(string.IsNullOrEmpty(filter.Name) || vac.Name == filter.Name)
-                && (string.IsNullOrEmpty(filter.Location) || vac.Location == filter.Location)
-                && (!filter.MinSalary.HasValue || vac.Salary >= filter.MinSalary)
-                && (!filter.MaxSalary.HasValue || vac.Salary <= filter.MinSalary)
-                &&(vac.IsArchived == false)
-            ).ToList();
-            return vacs;
+            try
+            {
+                var vacs = _collection.GetByCondition(vac =>
+                    (string.IsNullOrEmpty(filter.Occupation) || vac.Occupation == filter.Occupation)
+                    && (string.IsNullOrEmpty(filter.Name) || vac.Name == filter.Name)
+                    && (string.IsNullOrEmpty(filter.Location) || vac.Location == filter.Location)
+                    && (!filter.MinSalary.HasValue || vac.Salary >= filter.MinSalary)
+                    && (!filter.MaxSalary.HasValue || vac.Salary <= filter.MinSalary)
+                    && (vac.IsArchived == false)
+                ).ToList();
+                return Ok(vacs);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+            
         }
         
         [HttpGet]
@@ -89,6 +97,7 @@ namespace JobMarket.Controllers
                     Firm = vac.Firm
                 };
                 _collection.Create(newVac);
+                _collection.Upload();
                 return Ok();
             }
             catch(Exception)
@@ -121,6 +130,7 @@ namespace JobMarket.Controllers
                 Firm = vac.Firm
             };
             _collection.Create(newVac);
+            _collection.Upload();
             return Ok();
         }
         
@@ -146,29 +156,28 @@ namespace JobMarket.Controllers
                     IsArchived = !vac.IsArchived,
                     Firm = vac.Firm
                 };
-            
+                
                 _collection.Update(newVac);
+                _collection.Upload();
                 return Ok(200); 
             }
-            else
-            {
-                return BadRequest();
-            }
-            
-            
+            return BadRequest();
+
+
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public IActionResult Delete([FromBody]BaseModel id)
         {
-            var vac = GetVacancyById(id);
+            var vac = _collection.GetByCondition(v => v.Id == id.Id ).FirstOrDefault();
             if (vac is null)
             {
                 return NotFound();
             }
 
             _collection.Delete(vac);
+            _collection.Upload();
             return Ok();
 
         }
