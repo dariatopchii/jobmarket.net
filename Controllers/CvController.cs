@@ -88,7 +88,6 @@ namespace JobMarket.Controllers
                     Position = cv.Position,
                     Salary = cv.Salary,
                     Description = cv.Description,
-                    Requirements = cv.Requirements,
                     UserId = cv.UserId,
                     IsArchived = cv.IsArchived
                 };
@@ -123,7 +122,6 @@ namespace JobMarket.Controllers
                 Position = cv.Position,
                 Salary = cv.Salary,
                 Description = cv.Description,
-                Requirements = cv.Requirements,
                 UserId = cv.UserId,
                 IsArchived = cv.IsArchived
             };
@@ -151,7 +149,6 @@ namespace JobMarket.Controllers
                     Position = cv.Position,
                     Salary = cv.Salary,
                     Description = cv.Description,
-                    Requirements = cv.Requirements,
                     UserId = cv.UserId,
                     IsArchived = !cv.IsArchived
                 };

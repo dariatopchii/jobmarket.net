@@ -11,7 +11,6 @@ namespace JobMarket.Models
 		public int Salary { get; set; }
 		public string Location { get; set; }
 		public string Description { get; set; }
-		public string  Requirements { get; set; }
 		public bool IsArchived { get; set; }
 		public Guid UserId { get; set; }
     }

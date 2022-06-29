@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using JobMarket.Files.Workers;
 using JobMarket.Models;
@@ -91,7 +92,6 @@ namespace JobMarket.Controllers
                     Occupation = vac.Occupation,
                     Salary = vac.Salary,
                     Description = vac.Description,
-                    Requirements = vac.Requirements,
                     UserId = vac.UserId,
                     IsArchived = vac.IsArchived,
                     Firm = vac.Firm
@@ -124,7 +124,6 @@ namespace JobMarket.Controllers
                 Occupation = vac.Occupation,
                 Salary = vac.Salary,
                 Description = vac.Description,
-                Requirements = vac.Requirements,
                 UserId = vac.UserId,
                 IsArchived = vac.IsArchived,
                 Firm = vac.Firm
@@ -139,7 +138,7 @@ namespace JobMarket.Controllers
         [HttpPut]
         public IActionResult Archive([FromBody]BaseModel id)
         {
-            var vac = _collection.GetByCondition(cv => cv.Id == id.Id).FirstOrDefault();
+            var vac = _collection.GetByCondition(vac => vac.Id == id.Id).FirstOrDefault();
             if (vac is not null)
             {
                 var newVac = new VacancyModel
@@ -151,7 +150,6 @@ namespace JobMarket.Controllers
                     Occupation = vac.Occupation,
                     Salary = vac.Salary,
                     Description = vac.Description,
-                    Requirements = vac.Requirements,
                     UserId = vac.UserId,
                     IsArchived = !vac.IsArchived,
                     Firm = vac.Firm
@@ -168,9 +166,9 @@ namespace JobMarket.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public IActionResult Delete([FromBody]BaseModel id)
+        public IActionResult Delete(Guid id)
         {
-            var vac = _collection.GetByCondition(v => v.Id == id.Id ).FirstOrDefault();
+            var vac = _collection.GetByCondition(v => v.Id == id ).FirstOrDefault();
             if (vac is null)
             {
                 return NotFound();
@@ -180,6 +178,34 @@ namespace JobMarket.Controllers
             _collection.Upload();
             return Ok();
 
+        }
+        [HttpGet("{id}/file")]
+        public ActionResult<Stream> DownloadFile(Guid id)
+        {
+            var vac = (_collection.GetByCondition(vac => vac.Id == id)).FirstOrDefault();
+            if (vac is null)
+            {
+                return NotFound();
+            }
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms);
+            var serviceProperties = new[]
+            {
+                nameof(CvModel.Id),
+                nameof(CvModel.UserId),
+                nameof(CvModel.IsArchived),
+            };
+            var properties = vac.GetType().GetProperties()
+                .Where(prop => !serviceProperties.Contains(prop.Name));
+            foreach (var prop in properties)
+            {
+                writer.WriteLine($"{prop.Name}: {prop.GetValue(vac)}");
+            }
+            
+            writer.Flush();
+            ms.Seek(0, SeekOrigin.Begin);
+
+            return new FileStreamResult(ms, "application/octet-stream");
         }
 
     }
